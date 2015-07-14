@@ -2,7 +2,7 @@ package br.com.aspotato.pagarme.enumerations;
 
 public enum PAYMENT_METHOD {
 
-	CREDIT_CARD("credit_car"),
+	CREDIT_CARD("credit_card"),
 	BOLETO("boleto");
 
 	private String value;    
