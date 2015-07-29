@@ -33,7 +33,7 @@ public class PlanService extends BasicService {
 		return jsonResponse;
 	}
 
-	public HttpResponse<JsonNode> update(String name, int trial_days, String id) throws Exception {
+	public HttpResponse<JsonNode> update(String name, Integer trial_days, String id) throws Exception {
 
 		HttpResponse<JsonNode> jsonResponse = null;
 
@@ -44,7 +44,7 @@ public class PlanService extends BasicService {
 		if(name != null){
 			request.field("name", name);
 		}
-		if(trial_days !=-1){
+		if(trial_days != null && trial_days.intValue() !=-1){
 			request.field("trial_days", Integer.toString(trial_days));
 		}
 
@@ -78,12 +78,12 @@ public class PlanService extends BasicService {
 		return plans;
 	}
 
-	public HttpResponse<JsonNode> delete(String id) throws Exception {
-		HttpResponse<JsonNode> jsonResponse = Unirest.delete(instance.getUrl() + "1/plans/" + id)
+	public void delete(String id) throws Exception {
+		 Unirest.delete(instance.getUrl() + "1/plans/" + id)
 				.header("accept", "application/json")
 				.queryString("api_key", instance.getApi_key())
 				.asJson();
-		return jsonResponse;
+		
 	}
 
 

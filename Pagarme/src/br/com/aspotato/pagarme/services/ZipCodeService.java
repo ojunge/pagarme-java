@@ -14,8 +14,8 @@ public class ZipCodeService {
 	
 	private PagarMeProvider instance = PagarMeProvider.getInstance();
 	
-	public ZipCode findbyId(String id) throws Exception {
-		HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getUrl() + "1/zipcodes/" + id)
+	public ZipCode findbyCode(String code) throws Exception {
+		HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getUrl() + "1/zipcodes/" + code)
 				.header("accept", "application/json")
 				.queryString("api_key", instance.getApi_key())
 				.asJson();
