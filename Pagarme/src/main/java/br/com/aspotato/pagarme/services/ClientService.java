@@ -1,20 +1,18 @@
 package br.com.aspotato.pagarme.services;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.request.HttpRequestWithBody;
 import org.json.JSONObject;
-
 import br.com.aspotato.pagarme.helpers.FormataHelper;
 import br.com.aspotato.pagarme.models.Client;
 import br.com.aspotato.pagarme.utils.PagarMeProvider;
 import br.com.aspotato.pagarme.utils.PagarMeUtil;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.request.HttpRequestWithBody;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClientService extends BasicService {
 

@@ -1,16 +1,14 @@
 package br.com.aspotato.pagarme.services;
 
-import java.util.ArrayList;
-
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
 import org.json.JSONObject;
-
 import br.com.aspotato.pagarme.models.Subscription;
 import br.com.aspotato.pagarme.utils.PagarMeProvider;
 import br.com.aspotato.pagarme.utils.PagarMeUtil;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
+import java.util.ArrayList;
 
 public class SubscriptionService extends BasicService {
 

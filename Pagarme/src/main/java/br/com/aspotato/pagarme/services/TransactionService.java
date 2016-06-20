@@ -1,16 +1,15 @@
 package br.com.aspotato.pagarme.services;
 
-import java.util.ArrayList;
-
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
 import org.json.JSONObject;
-
+import br.com.aspotato.pagarme.models.Key;
 import br.com.aspotato.pagarme.models.Transaction;
 import br.com.aspotato.pagarme.utils.PagarMeProvider;
 import br.com.aspotato.pagarme.utils.PagarMeUtil;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
+import java.util.ArrayList;
 
 public class TransactionService extends BasicService {
 	
@@ -41,6 +40,16 @@ public class TransactionService extends BasicService {
 		Transaction transaction = (Transaction) PagarMeUtil.convertJsonToObject(Transaction.class, resultObject);
 		
 		return transaction;
+	}
+
+	public Key generateCardHash() throws Exception {
+		HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getUrl() + "1/transactions/card_hash_key")
+				.header("accept", "application/json")
+				.queryString("api_key", instance.getApi_key())
+				.asJson();
+		JSONObject resultObject = jsonResponse.getBody().getObject();
+
+		return (Key) PagarMeUtil.convertJsonToObject(Key.class, resultObject);
 	}
 
 }

@@ -1,12 +1,11 @@
 package br.com.aspotato.pagarme.services;
 
-import br.com.aspotato.pagarme.models.Card;
-import br.com.aspotato.pagarme.utils.PagarMeProvider;
-
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.HttpRequestWithBody;
+import br.com.aspotato.pagarme.models.Card;
+import br.com.aspotato.pagarme.utils.PagarMeProvider;
 
 public class CardService extends BasicService {
 

@@ -1,10 +1,10 @@
 package br.com.aspotato.pagarme.models;
 
+import br.com.aspotato.pagarme.anotations.FieldRequired;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-
-import br.com.aspotato.pagarme.anotations.FieldRequired;
 
 public class Client extends Model {
 	
