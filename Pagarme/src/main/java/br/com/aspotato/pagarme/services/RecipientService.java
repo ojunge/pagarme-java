@@ -5,9 +5,6 @@
  */
 package br.com.aspotato.pagarme.services;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
-import java.text.ParseException;
-import org.json.JSONException;
 import org.json.JSONObject;
 import br.com.aspotato.pagarme.models.Recipient;
 import br.com.aspotato.pagarme.utils.PagarMeUtil;
