@@ -15,6 +15,10 @@ import org.json.JSONObject;
 import br.com.aspotato.pagarme.anotations.PagarmeJsonProperty;
 import br.com.aspotato.pagarme.utils.PagarMeProvider;
 import br.com.aspotato.pagarme.models.BankAccount;
+import java.util.Arrays;
+import java.util.List;
+import org.json.JSONArray;
+import br.com.aspotato.pagarme.models.Recipient;
 
 public abstract class BasicService {
 
@@ -36,6 +40,29 @@ public abstract class BasicService {
         
         return resultObject;
     }
+    
+    public List getCollectionDataFromRemoteResouce(String resource) throws Exception   {
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getBaseUrl() + resource)
+				.header("accept", "application/json")
+				.queryString("api_key", instance.getApi_key())
+				.asJson();
+        
+	JsonNode resultObject = jsonResponse.getBody();
+        List retorno = new ArrayList<>();
+        
+        if (resultObject.isArray())     {
+            JSONArray arr = resultObject.getArray();
+            for (int i=0; i<arr.length(); i++)  {
+                retorno.add(arr.get(i));
+            }
+        }   else    {
+            retorno.add(resultObject.getObject());
+        }
+        
+        return retorno;
+    }
+    
+
     
     /**
      * Make a generic post to a Pagar.me REST resource
@@ -109,4 +136,6 @@ public abstract class BasicService {
         }
         return true;
     }
+    
+   
 }

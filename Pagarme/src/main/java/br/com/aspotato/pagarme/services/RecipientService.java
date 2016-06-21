@@ -8,6 +8,8 @@ package br.com.aspotato.pagarme.services;
 import org.json.JSONObject;
 import br.com.aspotato.pagarme.models.Recipient;
 import br.com.aspotato.pagarme.utils.PagarMeUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -21,7 +23,19 @@ public class RecipientService extends BasicService {
         JSONObject obj = this.postToRemoteResource(RESOURCE, request);
         Recipient resposta = (Recipient) PagarMeUtil.convertJsonToObject(Recipient.class, obj);
         return resposta;
+    }
+    
+    public List<Recipient> getAllRecipients() throws Exception {
         
+        List<JSONObject> tmpLista = this.getCollectionDataFromRemoteResouce(RESOURCE);
+        List<Recipient> retorno = new ArrayList<>();
+        
+        for (int i=0; i<tmpLista.size(); i++) {
+            JSONObject tmpj = (JSONObject) tmpLista.get(i);
+            Recipient tmp = (Recipient) PagarMeUtil.convertJsonToObject(Recipient.class, tmpj );
+            retorno.add(tmp);
+        }
+        return retorno;
     }
     
 }
