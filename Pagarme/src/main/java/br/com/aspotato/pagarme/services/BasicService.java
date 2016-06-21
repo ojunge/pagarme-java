@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.json.JSONArray;
 import br.com.aspotato.pagarme.models.Recipient;
+import br.com.aspotato.pagarme.utils.PagarMeUtil;
 
 public abstract class BasicService {
 
@@ -31,17 +32,17 @@ public abstract class BasicService {
      * @return JSON response object from Pagar.me
      * @throws UnirestException 
      */
-    public JSONObject getDataFromRemoteResouceWithId (String resource, String id) throws UnirestException {
+    public Object getDataFromRemoteResouceWithId (Class<?> classe, String resource, String id) throws Exception {
         HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getBaseUrl() + resource + "/" + id)
 				.header("accept", "application/json")
 				.queryString("api_key", instance.getApi_key())
 				.asJson();
 	JSONObject resultObject = jsonResponse.getBody().getObject();
         
-        return resultObject;
+        return PagarMeUtil.convertJsonToObject(classe, resultObject);
     }
     
-    public List getCollectionDataFromRemoteResouce(String resource) throws Exception   {
+    public List<Object> getCollectionDataFromRemoteResource(Class<?> classe, String resource) throws Exception   {
         HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getBaseUrl() + resource)
 				.header("accept", "application/json")
 				.queryString("api_key", instance.getApi_key())
@@ -53,10 +54,10 @@ public abstract class BasicService {
         if (resultObject.isArray())     {
             JSONArray arr = resultObject.getArray();
             for (int i=0; i<arr.length(); i++)  {
-                retorno.add(arr.get(i));
+                retorno.add(PagarMeUtil.convertJsonToObject(classe, arr.getJSONObject(i)));
             }
         }   else    {
-            retorno.add(resultObject.getObject());
+            retorno.add(PagarMeUtil.convertJsonToObject(classe,resultObject.getObject()));
         }
         
         return retorno;

@@ -27,15 +27,18 @@ public class RecipientService extends BasicService {
     
     public List<Recipient> getAllRecipients() throws Exception {
         
-        List<JSONObject> tmpLista = this.getCollectionDataFromRemoteResouce(RESOURCE);
+        List<Object> tmpLista = this.getCollectionDataFromRemoteResource(Recipient.class, RESOURCE);
         List<Recipient> retorno = new ArrayList<>();
         
         for (int i=0; i<tmpLista.size(); i++) {
-            JSONObject tmpj = (JSONObject) tmpLista.get(i);
-            Recipient tmp = (Recipient) PagarMeUtil.convertJsonToObject(Recipient.class, tmpj );
+            Recipient tmp = (Recipient) tmpLista.get(i);
             retorno.add(tmp);
         }
         return retorno;
+    }
+    
+    public Recipient getRecipient(String id) throws Exception   {
+        return (Recipient) this.getDataFromRemoteResouceWithId(Recipient.class, RESOURCE, id);
     }
     
 }
