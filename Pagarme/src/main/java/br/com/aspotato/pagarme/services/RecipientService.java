@@ -25,6 +25,13 @@ public class RecipientService extends BasicService {
         return resposta;
     }
     
+    public Recipient putRecipient(String objectId, Recipient request) throws Exception {
+        JSONObject obj = this.putToRemoteResource(RESOURCE, objectId, request);
+        Recipient resposta = (Recipient) PagarMeUtil.convertJsonToObject(Recipient.class, obj);
+        return resposta;
+        
+    }
+    
     public List<Recipient> getAllRecipients() throws Exception {
         
         List<Object> tmpLista = this.getCollectionDataFromRemoteResource(Recipient.class, RESOURCE);

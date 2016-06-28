@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONObject;
 import br.com.aspotato.pagarme.anotations.PagarmeJsonProperty;
+import br.com.aspotato.pagarme.exceptions.InvalidFormatException;
+import br.com.aspotato.pagarme.exceptions.SubmitException;
 import br.com.aspotato.pagarme.utils.PagarMeProvider;
 import br.com.aspotato.pagarme.models.BankAccount;
 import java.util.Arrays;
@@ -63,7 +65,27 @@ public abstract class BasicService {
         return retorno;
     }
     
-
+    /**
+     * Make a generic PATCH to a Pagar.me REST resource
+     * @param resource to be used
+     * @param dataObject POJO containing the data to be sent
+     * @return JSON response object from Pagar.me
+     * @throws Exception 
+     */
+    public JSONObject patchToRemoteResource(String resource, String objectID, Object dataObject) throws IllegalAccessException, UnirestException, InvalidFormatException, SubmitException {
+        return this.submitToRemoteResource("PATCH", instance.getBaseUrl() + resource + "/" + objectID, dataObject);
+    }
+    
+    /**
+     * Make a generic PUT to a Pagar.me REST resource
+     * @param resource to be used
+     * @param dataObject POJO containing the data to be sent
+     * @return JSON response object from Pagar.me
+     * @throws Exception 
+     */
+    public JSONObject putToRemoteResource(String resource, String objectID, Object dataObject) throws IllegalAccessException, UnirestException, InvalidFormatException, SubmitException {
+        return this.submitToRemoteResource("PUT", instance.getBaseUrl() + resource + "/" + objectID, dataObject);
+    }
     
     /**
      * Make a generic post to a Pagar.me REST resource
@@ -72,8 +94,22 @@ public abstract class BasicService {
      * @return JSON response object from Pagar.me
      * @throws Exception 
      */
-    public JSONObject postToRemoteResource(String resource, Object dataObject) throws IllegalAccessException, UnirestException {
-		
+    public JSONObject postToRemoteResource(String resource, Object dataObject) throws IllegalAccessException, UnirestException, InvalidFormatException, SubmitException {
+        return this.submitToRemoteResource("POST", instance.getBaseUrl() + resource, dataObject);
+    }
+    
+    
+    /**
+     * Make a generic submission with Body to a Pagar.me REST resource
+     * @param method REST method to be used during the HTTP request
+     * @param URI to be called
+     * @param dataObject POJO containing the data to be sent
+     * @return JSON response object from Pagar.me
+     * @throws Exception 
+     */
+    public JSONObject submitToRemoteResource(String method, String URI, Object dataObject) throws IllegalAccessException, InvalidFormatException, SubmitException, UnirestException {
+
+        
         HttpResponse<JsonNode> jsonResponse = null;
         Class<?> classe = dataObject.getClass();
         Map<String, Object> postFields = new HashMap<>();
@@ -88,12 +124,14 @@ public abstract class BasicService {
             //to Array
             if (field.getType().equals(BankAccount.class))  {
                 BankAccount ba = (BankAccount) field.get(dataObject); 
-                Class<?> tmpClass = ba.getClass();
-                for (Field subField : tmpClass.getDeclaredFields()) {
-                    subField.setAccessible(true);
-                    tmp = subField.get(ba);
-                    if (tmp != null)    {
-                        postFields.put("bank_account[" + subField.getName() + "]", tmp);
+                if (ba!=null)   {
+                    Class<?> tmpClass = ba.getClass();
+                    for (Field subField : tmpClass.getDeclaredFields()) {
+                        subField.setAccessible(true);
+                        tmp = subField.get(ba);
+                        if (tmp != null)    {
+                            postFields.put("bank_account[" + subField.getName() + "]", tmp);
+                        }
                     }
                 }
             } else  {
@@ -106,17 +144,47 @@ public abstract class BasicService {
         
         if (postFields.size()>0)    {
             postFields.put("api_key", instance.getApi_key());
-            jsonResponse = Unirest.post(instance.getBaseUrl() + resource)
-                            .header("accept", "application/json")
-                            .fields(postFields)
-                            .asJson();
+            if (method.equalsIgnoreCase("post")) {
+                jsonResponse = Unirest.post(URI)
+                                .header("accept", "application/json")
+                                .fields(postFields)
+                                .asJson();
+            } else if (method.equalsIgnoreCase("put")) {
+                jsonResponse = Unirest.put(URI)
+                                .header("accept", "application/json")
+                                .fields(postFields)
+                                .asJson();
+            } else if (method.equalsIgnoreCase("patch")) {
+                jsonResponse = Unirest.patch(URI)
+                                .header("accept", "application/json")
+                                .fields(postFields)
+                                .asJson();
+            }
+            
             JSONObject resultObject = jsonResponse.getBody().getObject();
+            
+            if (resultObject.has("errors"))  {
+                String errMessage;
+                JSONArray errs = resultObject.getJSONArray("errors");
+                if (errs.length()>0)    {
+                    JSONObject errDetails = errs.getJSONObject(0);                    
+                    if ((errDetails.has("parameter_name")) && (errDetails.has("message")))   {
+                        errMessage = errDetails.getString("message") + " at " + errDetails.getString("parameter_name");  
+                        throw new InvalidFormatException(errMessage);
+                    }   else if (errDetails.has("message"))     {
+                        errMessage = errDetails.getString("message");
+                        throw new SubmitException(errMessage);
+                    }
+                }
+                throw new UnirestException("Not defined error.");
+            }
             return resultObject;
             
         } else  {
             return null;
 	}
     }
+    
     
     protected Boolean validateFiels(Object object) throws Exception {
 
