@@ -17,15 +17,13 @@ import br.com.aspotato.pagarme.exceptions.InvalidFormatException;
 import br.com.aspotato.pagarme.exceptions.SubmitException;
 import br.com.aspotato.pagarme.utils.PagarMeProvider;
 import br.com.aspotato.pagarme.models.BankAccount;
-import java.util.Arrays;
 import java.util.List;
 import org.json.JSONArray;
-import br.com.aspotato.pagarme.models.Recipient;
 import br.com.aspotato.pagarme.utils.PagarMeUtil;
 
 public abstract class BasicService {
 
-    private PagarMeProvider instance = PagarMeProvider.getInstance();
+    protected PagarMeProvider instance = PagarMeProvider.getInstance();
     
     /**
      * Get generic data from Pagar.me resource using an ID as identifier 
@@ -41,6 +39,8 @@ public abstract class BasicService {
 				.asJson();
 	JSONObject resultObject = jsonResponse.getBody().getObject();
         
+        this.checkErrors(resultObject);
+        
         return PagarMeUtil.convertJsonToObject(classe, resultObject);
     }
     
@@ -51,6 +51,9 @@ public abstract class BasicService {
 				.asJson();
         
 	JsonNode resultObject = jsonResponse.getBody();
+        
+        this.checkErrors(resultObject);
+        
         List retorno = new ArrayList<>();
         
         if (resultObject.isArray())     {
@@ -163,21 +166,8 @@ public abstract class BasicService {
             
             JSONObject resultObject = jsonResponse.getBody().getObject();
             
-            if (resultObject.has("errors"))  {
-                String errMessage;
-                JSONArray errs = resultObject.getJSONArray("errors");
-                if (errs.length()>0)    {
-                    JSONObject errDetails = errs.getJSONObject(0);                    
-                    if ((errDetails.has("parameter_name")) && (errDetails.has("message")))   {
-                        errMessage = errDetails.getString("message") + " at " + errDetails.getString("parameter_name");  
-                        throw new InvalidFormatException(errMessage);
-                    }   else if (errDetails.has("message"))     {
-                        errMessage = errDetails.getString("message");
-                        throw new SubmitException(errMessage);
-                    }
-                }
-                throw new UnirestException("Not defined error.");
-            }
+            this.checkErrors(resultObject);
+            
             return resultObject;
             
         } else  {
@@ -206,5 +196,45 @@ public abstract class BasicService {
         return true;
     }
     
-   
+    /**
+     * Method that checks if the return from Pagar.me contains errors.
+     * @param resultObject
+     * @throws IllegalAccessException, InvalidFormatException, SubmitException or 
+     * UnirestException in case an error was returned from Pagar.me
+     */
+    protected void checkErrors(JSONObject resultObject) throws IllegalAccessException, InvalidFormatException, SubmitException, UnirestException { 
+        if (resultObject.has("errors"))  {
+            String errMessage;
+            JSONArray errs = resultObject.getJSONArray("errors");
+            if (errs.length()>0)    {
+                JSONObject errDetails = errs.getJSONObject(0);                    
+                if ((errDetails.has("parameter_name")) && (errDetails.has("message")))   {
+                    errMessage = errDetails.getString("message") + " at " + errDetails.getString("parameter_name");  
+                    throw new InvalidFormatException(errMessage);
+                }   else if (errDetails.has("message"))     {
+                    errMessage = errDetails.getString("message");
+                    throw new SubmitException(errMessage);
+                }
+            }
+            throw new UnirestException("Not defined error.");
+        }        
+    }
+    
+    
+    /**
+     * Method that checks if the return from Pagar.me contains errors.
+     * @param resultObject A Node that contains the result from the call
+     * @throws IllegalAccessException, InvalidFormatException, SubmitException or 
+     * UnirestException in case an error was returned from Pagar.me
+     */
+    protected void checkErrors(JsonNode resultObject) throws IllegalAccessException, InvalidFormatException, SubmitException, UnirestException { 
+        if (resultObject.isArray())     {
+            JSONArray arr = resultObject.getArray();
+            for (int i=0; i<arr.length(); i++)  {
+                this.checkErrors(arr.getJSONObject(i));
+            }
+        }   else    {
+            this.checkErrors(resultObject.getObject());
+        }
+    }
 }
