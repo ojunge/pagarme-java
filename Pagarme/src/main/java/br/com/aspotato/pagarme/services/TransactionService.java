@@ -6,14 +6,13 @@ import com.mashape.unirest.http.Unirest;
 import org.json.JSONObject;
 import br.com.aspotato.pagarme.models.Key;
 import br.com.aspotato.pagarme.models.Transaction;
-import br.com.aspotato.pagarme.utils.PagarMeProvider;
 import br.com.aspotato.pagarme.utils.PagarMeUtil;
 
 import java.util.ArrayList;
 
 public class TransactionService extends BasicService {
 	
-	private PagarMeProvider instance = PagarMeProvider.getInstance();
+        private final String RESOURCE = "transactions"; 
 	
 	public ArrayList<Transaction> findAll() throws Exception {
 
@@ -43,13 +42,14 @@ public class TransactionService extends BasicService {
 	}
 
 	public Key generateCardHash() throws Exception {
-		HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getUrl() + "1/transactions/card_hash_key")
-				.header("accept", "application/json")
-				.queryString("api_key", instance.getApi_key())
-				.asJson();
-		JSONObject resultObject = jsonResponse.getBody().getObject();
-
-		return (Key) PagarMeUtil.convertJsonToObject(Key.class, resultObject);
-	}
-
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getUrl() + "1/transactions/card_hash_key")
+                            .header("accept", "application/json")
+                            .queryString("encryption_key", instance.getEncryptionKey())
+                            .asJson();
+            JSONObject resultObject = jsonResponse.getBody().getObject();
+            
+            this.checkErrors(resultObject);
+            return (Key) PagarMeUtil.convertJsonToObject(Key.class, resultObject);
+            
+        }
 }

@@ -10,6 +10,7 @@ public class PagarMeProvider {
     private String url = "https://api.pagar.me/";
     private String api_key = "";
     private String api_version = "1/";
+    private String encryption_key = "";
 
     public static PagarMeProvider getInstance() {
             if (instance == null)
@@ -50,4 +51,14 @@ public class PagarMeProvider {
     public String getBaseUrl()  {
         return this.getUrl() + this.getApiVersion();
     }
+
+    public String getEncryptionKey() {
+        return encryption_key;
+    }
+
+    public void setEncryption_key(String encryption_key) {
+        this.encryption_key = encryption_key;
+    }
+    
+    
 }
