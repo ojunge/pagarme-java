@@ -41,15 +41,5 @@ public class TransactionService extends BasicService {
 		return transaction;
 	}
 
-	public Key generateCardHash() throws Exception {
-            HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getUrl() + "1/transactions/card_hash_key")
-                            .header("accept", "application/json")
-                            .queryString("encryption_key", instance.getEncryptionKey())
-                            .asJson();
-            JSONObject resultObject = jsonResponse.getBody().getObject();
-            
-            this.checkErrors(resultObject);
-            return (Key) PagarMeUtil.convertJsonToObject(Key.class, resultObject);
-            
-        }
+	
 }
