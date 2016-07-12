@@ -31,7 +31,7 @@ public class CardService extends BasicService {
         
         
         public Key generateCardHash() throws Exception {
-            HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getUrl() + "1/transactions/card_hash_key")
+            HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getBaseUrl() + "transactions/card_hash_key")
                             .header("accept", "application/json")
                             .queryString("encryption_key", instance.getEncryptionKey())
                             .asJson();
