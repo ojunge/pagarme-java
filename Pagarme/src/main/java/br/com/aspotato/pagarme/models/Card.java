@@ -16,7 +16,7 @@ public class Card extends Model {
 	private Boolean valid;
 	private String card_number;
 	private Date card_expiration_date ;
-	private Date expiration_date;
+	private String expiration_date;
 	private String customer_id;
 	private String card_hash;
 	
@@ -94,10 +94,10 @@ public class Card extends Model {
 	public void setCard_expiration_date(Date card_expiration_date) {
 		this.card_expiration_date = card_expiration_date;
 	}
-	public Date getExpiration_date() {
+	public String getExpiration_date() {
 		return expiration_date;
 	}
-	public void setExpiration_date(Date expiration_date) {
+	public void setExpiration_date(String expiration_date) {
 		this.expiration_date = expiration_date;
 	}
 	public String getCustomer_id() {
