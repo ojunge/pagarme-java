@@ -20,6 +20,8 @@ import br.com.aspotato.pagarme.models.BankAccount;
 import java.util.List;
 import org.json.JSONArray;
 import br.com.aspotato.pagarme.utils.PagarMeUtil;
+import java.text.ParseException;
+import org.json.JSONException;
 
 public abstract class BasicService {
 
@@ -32,7 +34,13 @@ public abstract class BasicService {
      * @return JSON response object from Pagar.me
      * @throws UnirestException 
      */
-    public Object getDataFromRemoteResouceWithId (Class<?> classe, String resource, String id) throws Exception {
+    public Object getDataFromRemoteResouceWithId (Class<?> classe, String resource, String id) throws   UnirestException, 
+                                                                                                        IllegalAccessException, 
+                                                                                                        InvalidFormatException, 
+                                                                                                        SubmitException, 
+                                                                                                        InstantiationException, 
+                                                                                                        JSONException, 
+                                                                                                        ParseException  {
         HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getBaseUrl() + resource + "/" + id)
 				.header("accept", "application/json")
 				.queryString("api_key", instance.getApi_key())

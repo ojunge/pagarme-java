@@ -1,5 +1,7 @@
 package br.com.aspotato.pagarme.services;
 
+import br.com.aspotato.pagarme.exceptions.InvalidFormatException;
+import br.com.aspotato.pagarme.exceptions.SubmitException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -8,11 +10,19 @@ import br.com.aspotato.pagarme.models.Card;
 import br.com.aspotato.pagarme.models.Key;
 import br.com.aspotato.pagarme.utils.PagarMeProvider;
 import br.com.aspotato.pagarme.utils.PagarMeUtil;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import java.text.ParseException;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Servico para manipulacao de dados de cartoes
+ * @author jeffprestes
+ */
 public class CardService extends BasicService {
 
-
+//TODO: Retornar Exceptions especificas para que a aplicacao utilitaria 
+//      possa fazer o tratamento ideal
 	private PagarMeProvider instance = PagarMeProvider.getInstance();
         private final String RESOURCE = "cards";
 
@@ -29,6 +39,16 @@ public class CardService extends BasicService {
 
 		return jsonResponse;
 	}
+        
+        public Card getCard(String id) throws   UnirestException, 
+                                                IllegalAccessException, 
+                                                InvalidFormatException, 
+                                                SubmitException, 
+                                                InstantiationException, 
+                                                JSONException, 
+                                                ParseException  {
+            return (Card) this.getDataFromRemoteResouceWithId(Card.class, RESOURCE, id);
+        }
         
         /**
          * Saves a new card
