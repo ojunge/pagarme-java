@@ -17,9 +17,14 @@ import br.com.aspotato.pagarme.exceptions.InvalidFormatException;
 import br.com.aspotato.pagarme.exceptions.SubmitException;
 import br.com.aspotato.pagarme.utils.PagarMeProvider;
 import br.com.aspotato.pagarme.models.BankAccount;
+import br.com.aspotato.pagarme.models.Metadata;
+import br.com.aspotato.pagarme.models.Card;
+import br.com.aspotato.pagarme.models.SplitRule;
 import java.util.List;
 import org.json.JSONArray;
 import br.com.aspotato.pagarme.utils.PagarMeUtil;
+import com.mashape.unirest.http.ObjectMapper;
+import java.lang.reflect.ParameterizedType;
 import java.text.ParseException;
 import org.json.JSONException;
 
@@ -119,7 +124,6 @@ public abstract class BasicService {
      * @throws Exception 
      */
     public JSONObject submitToRemoteResource(String method, String URI, Object dataObject) throws IllegalAccessException, InvalidFormatException, SubmitException, UnirestException {
-
         
         HttpResponse<JsonNode> jsonResponse = null;
         Class<?> classe = dataObject.getClass();
@@ -129,25 +133,29 @@ public abstract class BasicService {
                 
         for (Field field : classe.getDeclaredFields()) {
             field.setAccessible(true);
-            
-            //Due Pagarme recieve an Array instead of JSON Object in their request
-            //We have to define each class type and make the translation from Object 
-            //to Array
-            if (field.getType().equals(BankAccount.class))  {
-                BankAccount ba = (BankAccount) field.get(dataObject); 
-                if (ba!=null)   {
-                    Class<?> tmpClass = ba.getClass();
-                    for (Field subField : tmpClass.getDeclaredFields()) {
-                        subField.setAccessible(true);
-                        tmp = subField.get(ba);
-                        if (tmp != null)    {
-                            postFields.put("bank_account[" + subField.getName() + "]", tmp);
+
+            if (field.get(dataObject)!=null)   {
+                //Due Pagarme recieve an Array instead of JSON Object in their request
+                //We have to define each class type and make the translation from Object 
+                //to Array
+                if (    field.getType().equals(BankAccount.class) || 
+                        field.getType().equals(Metadata.class) ||
+                        field.getType().equals(Card.class))        {
+
+                    this.addPostField(field.get(dataObject).getClass(), field.get(dataObject), postFields, null);
+
+                } else if (field.getType().equals(List.class))  {
+                    ArrayList arrayList = (ArrayList) field.get(dataObject);
+
+                    for (int i=0; i<arrayList.size(); i++)  {
+                        Object tmpItemArray = arrayList.get(i);
+                        if (tmpItemArray!=null)   {
+                            this.addPostField(tmpItemArray.getClass(), tmpItemArray, postFields, i);
                         }
                     }
-                }
-            } else  {
-                tmp = field.get(dataObject);
-                if (tmp != null)    {
+
+                } else  {
+                    tmp = field.get(dataObject);
                     postFields.put(field.getName(), tmp);
                 }
             }
@@ -172,6 +180,15 @@ public abstract class BasicService {
                                 .asJson();
             }
             
+            try {
+                int n = jsonResponse.getRawBody().available();
+                byte[] bytess = new byte[n];
+                jsonResponse.getRawBody().read(bytess, 0, n);
+                String s = new String(bytess);
+                System.out.println("Retorno:" + s);
+            } catch (Exception ex) {
+                System.out.println(ex.getLocalizedMessage());
+            }
             JSONObject resultObject = jsonResponse.getBody().getObject();
             
             this.checkErrors(resultObject);
@@ -181,6 +198,28 @@ public abstract class BasicService {
         } else  {
             return null;
 	}
+    }
+    
+    
+    private void addPostField(Class tmpClass, Object data, Map postFields, Integer indice) throws IllegalArgumentException, IllegalAccessException  {
+        Object tmp;
+        for (Field subField : tmpClass.getDeclaredFields()) {
+            subField.setAccessible(true);
+            tmp = subField.get(data);
+            if (tmp != null)    {
+                String tmpFieldName = "";
+                if (data.getClass() == BankAccount.class)   {
+                    tmpFieldName = "bank_account[" + subField.getName() + "]"; 
+                }   else if (data.getClass() == Metadata.class)   {
+                    tmpFieldName = "metadata[" + subField.getName() + "]"; 
+                }   else if (data.getClass() == Card.class)   {
+                    tmpFieldName = "card_id"; 
+                }   else if (data.getClass() == SplitRule.class)   {
+                    tmpFieldName = "split_rules[" + indice + "][" + subField.getName() + "]"; 
+                }
+                postFields.put(tmpFieldName, tmp);
+            }
+        }
     }
     
     
@@ -228,7 +267,7 @@ public abstract class BasicService {
         }        
     }
     
-    
+        
     /**
      * Method that checks if the return from Pagar.me contains errors.
      * @param resultObject A Node that contains the result from the call
