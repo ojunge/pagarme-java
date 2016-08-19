@@ -16,6 +16,7 @@ public class Recipient extends Model {
     private String object;
     private String id;
     private BankAccount bank_account;
+    private int bank_account_id;
     private Boolean transfer_enabled;
     private String transfer_interval;
     private int transfer_day;
@@ -71,6 +72,20 @@ public class Recipient extends Model {
      */
     public void setBank_account(BankAccount bank_account) {
         this.bank_account = bank_account;
+    }
+
+    /**
+     * @return the bank account id
+     */
+    public int getBank_account_id() {
+        return bank_account_id;
+    }
+
+    /**
+     * @param bank_account_id
+     */
+    public void setBank_account_id(int bank_account_id) {
+        this.bank_account_id = bank_account_id;
     }
 
     /**

@@ -10,7 +10,14 @@ import br.com.aspotato.pagarme.utils.PagarMeUtil;
 
 public class BankAccountService extends BasicService {
 
+	private final String RESOURCE = "bank_accounts";
 	private PagarMeProvider instance = PagarMeProvider.getInstance();
+
+	public BankAccount postNewBankAccount(BankAccount request) throws Exception {
+		JSONObject obj = this.postToRemoteResource(RESOURCE, request);
+		BankAccount resposta = (BankAccount) PagarMeUtil.convertJsonToObject(BankAccount.class, obj);
+		return resposta;
+	}
 
 	public BankAccount findbyId(String id) throws Exception {
 		HttpResponse<JsonNode> jsonResponse = Unirest.get(instance.getUrl() + "1/bank_accounts/" + id)
