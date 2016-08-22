@@ -2,6 +2,7 @@ package br.com.aspotato.pagarme.services;
 
 import br.com.aspotato.pagarme.exceptions.InvalidFormatException;
 import br.com.aspotato.pagarme.exceptions.SubmitException;
+import br.com.aspotato.pagarme.models.BankAccount;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -73,6 +74,31 @@ public class TransactionService extends BasicService {
         Transaction transaction = (Transaction) this.getDataFromRemoteResouceWithId(Transaction.class, RESOURCE, id);
 
         return transaction;
+    }
+
+    /**
+     * Estornar a transaction
+     * @param idTransaction identificação da transação
+     * @param bankAccount necessario para estorno de boleto
+     * @return
+     * @throws IllegalAccessException
+     * @throws UnirestException
+     * @throws InvalidFormatException
+     * @throws SubmitException
+     * @throws InstantiationException
+     * @throws JSONException
+     * @throws ParseException
+     */
+    public Transaction refundTransaction(int idTransaction, BankAccount bankAccount) throws IllegalAccessException
+                                                                    , UnirestException
+                                                                    , InvalidFormatException
+                                                                    , SubmitException
+                                                                    , InstantiationException
+                                                                    , JSONException
+                                                                    , ParseException      {
+        String refundEndpoint = RESOURCE + String.format("/%d/refund", idTransaction);
+        JSONObject obj = this.postToRemoteResource(refundEndpoint, bankAccount);
+        return (Transaction) PagarMeUtil.convertJsonToObject(Transaction.class, obj);
     }
 	
 }
