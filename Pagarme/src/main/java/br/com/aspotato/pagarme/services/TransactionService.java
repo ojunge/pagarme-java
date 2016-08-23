@@ -6,6 +6,8 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import org.json.JSONObject;
+
+import br.com.aspotato.pagarme.models.Key;
 import br.com.aspotato.pagarme.models.Transaction;
 import br.com.aspotato.pagarme.utils.PagarMeUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -74,5 +76,36 @@ public class TransactionService extends BasicService {
 
         return transaction;
     }
-	
+
+    /**
+     * Estornar a transaction
+     * @param idTransaction identificação da transação
+     * @return
+     * @throws IllegalAccessException
+     * @throws UnirestException
+     * @throws InvalidFormatException
+     * @throws SubmitException
+     * @throws InstantiationException
+     * @throws JSONException
+     * @throws ParseException
+     */
+    public Transaction refundTransaction(int idTransaction) throws IllegalAccessException
+                                                                    , UnirestException
+                                                                    , InvalidFormatException
+                                                                    , SubmitException
+                                                                    , InstantiationException
+                                                                    , JSONException
+                                                                    , ParseException      {
+        String refundEndpoint = RESOURCE + String.format("/%d/refund", idTransaction);
+        HttpResponse<JsonNode> jsonResponse = Unirest.post(instance.getBaseUrl() + refundEndpoint)
+                .header("accept", "application/json")
+                .queryString("encryption_key", instance.getEncryptionKey())
+                .field("api_key", instance.getApi_key())
+                .asJson();
+        JSONObject resultObject = jsonResponse.getBody().getObject();
+
+        this.checkErrors(resultObject);
+        return (Transaction) PagarMeUtil.convertJsonToObject(Transaction.class, resultObject);
+    }
+
 }
