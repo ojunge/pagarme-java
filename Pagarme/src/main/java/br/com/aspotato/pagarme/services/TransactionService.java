@@ -7,6 +7,8 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import org.json.JSONObject;
+
+import br.com.aspotato.pagarme.models.Key;
 import br.com.aspotato.pagarme.models.Transaction;
 import br.com.aspotato.pagarme.utils.PagarMeUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -79,7 +81,6 @@ public class TransactionService extends BasicService {
     /**
      * Estornar a transaction
      * @param idTransaction identificação da transação
-     * @param bankAccount necessario para estorno de boleto
      * @return
      * @throws IllegalAccessException
      * @throws UnirestException
@@ -89,7 +90,7 @@ public class TransactionService extends BasicService {
      * @throws JSONException
      * @throws ParseException
      */
-    public Transaction refundTransaction(int idTransaction, BankAccount bankAccount) throws IllegalAccessException
+    public Transaction refundTransaction(int idTransaction) throws IllegalAccessException
                                                                     , UnirestException
                                                                     , InvalidFormatException
                                                                     , SubmitException
@@ -97,8 +98,15 @@ public class TransactionService extends BasicService {
                                                                     , JSONException
                                                                     , ParseException      {
         String refundEndpoint = RESOURCE + String.format("/%d/refund", idTransaction);
-        JSONObject obj = this.postToRemoteResource(refundEndpoint, bankAccount);
-        return (Transaction) PagarMeUtil.convertJsonToObject(Transaction.class, obj);
+        HttpResponse<JsonNode> jsonResponse = Unirest.post(instance.getBaseUrl() + refundEndpoint)
+                .header("accept", "application/json")
+                .queryString("encryption_key", instance.getEncryptionKey())
+                .field("api_key", instance.getApi_key())
+                .asJson();
+        JSONObject resultObject = jsonResponse.getBody().getObject();
+
+        this.checkErrors(resultObject);
+        return (Transaction) PagarMeUtil.convertJsonToObject(Transaction.class, resultObject);
     }
 	
 }
