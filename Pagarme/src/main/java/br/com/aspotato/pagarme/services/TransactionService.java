@@ -2,7 +2,6 @@ package br.com.aspotato.pagarme.services;
 
 import br.com.aspotato.pagarme.exceptions.InvalidFormatException;
 import br.com.aspotato.pagarme.exceptions.SubmitException;
-import br.com.aspotato.pagarme.models.BankAccount;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -108,5 +107,5 @@ public class TransactionService extends BasicService {
         this.checkErrors(resultObject);
         return (Transaction) PagarMeUtil.convertJsonToObject(Transaction.class, resultObject);
     }
-	
+
 }
