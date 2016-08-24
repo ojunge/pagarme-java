@@ -256,7 +256,13 @@ public abstract class BasicService {
             if (errs.length()>0)    {
                 JSONObject errDetails = errs.getJSONObject(0);                    
                 if ((errDetails.has("parameter_name")) && (errDetails.has("message")))   {
-                    errMessage = errDetails.getString("message") + " at " + errDetails.getString("parameter_name");  
+                    errMessage = "";
+                    if (errDetails.getString("message") !=null)  {
+                        errMessage += errDetails.getString("message");
+                    }
+                    if (errDetails.get("parameter_name") !=null)  {
+                        errMessage += errDetails.get("parameter_name");
+                    }  
                     throw new InvalidFormatException(errMessage);
                 }   else if (errDetails.has("message"))     {
                     errMessage = errDetails.getString("message");
