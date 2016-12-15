@@ -1,14 +1,12 @@
 package br.com.aspotato.pagarme.services;
 
-import org.json.JSONObject;
-
-import br.com.aspotato.pagarme.models.Balance;
-import br.com.aspotato.pagarme.utils.PagarMeProvider;
-import br.com.aspotato.pagarme.utils.PagarMeUtil;
-
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
+import org.json.JSONObject;
+import br.com.aspotato.pagarme.models.Balance;
+import br.com.aspotato.pagarme.utils.PagarMeProvider;
+import br.com.aspotato.pagarme.utils.PagarMeUtil;
 
 public class BalanceService extends BasicService {
 

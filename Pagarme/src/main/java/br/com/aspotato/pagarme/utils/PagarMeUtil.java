@@ -1,17 +1,16 @@
 package br.com.aspotato.pagarme.utils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import br.com.aspotato.pagarme.models.Model;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import br.com.aspotato.pagarme.models.Model;
 
 public class PagarMeUtil {
 

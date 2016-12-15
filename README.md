@@ -1,15 +1,16 @@
- PagarMejava
+ PagarMe Java
  =============
- 
+
 'Biblioteca não Oficial'
 
-Essa biblioteca  tem como objetivo, auxiliar o desenvolvedor Java a integrar com os serviços do Gateway de Pagamento 'PagarMe'.
-Através da mesma é possível executar as funções básicas de buscas, alteração, remoção e adicionar.
+Essa biblioteca  tem como objetivo, auxiliar o desenvolvedor Java a integrar seu projeto com os serviços do Gateway de Pagamento 'PagarMe'.
+Através da mesma é possível executar as funções básicas de buscas, alteração, remoção e execução de novas transações.
 
 Recursos
 -----------
 *Planos
 *Codigos Postais
+*Recebedores em casos de marketplace
 
 
 Dependências
@@ -21,11 +22,12 @@ httpcore-nio-4.3.jar
 httpmime-4.3.6.jar
 json-20140107.jar
 org-apache-commons-logging.jar
-unirest-java-1.4.5.jar
+unirest-java-1.4.9.jar
 
 Maven
 -----------
-Em breve
+O pom.xml do projeto esta dentro do diretorio Pagarme. Use-o para abrir o projeto usando o Maven.
+Para compilar basta executar o `mvn package` dentro do diretório Pagarme
 
 
 Demo
@@ -41,4 +43,3 @@ Segue Exemplo Abaiixo:
 	PlanService service = new PlanService();
 	ArrayList<Plan>	plans = service.findAll();
 ```
-

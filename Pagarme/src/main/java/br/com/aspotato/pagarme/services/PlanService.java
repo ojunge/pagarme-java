@@ -1,17 +1,15 @@
 package br.com.aspotato.pagarme.services;
 
-import java.util.ArrayList;
-
-import org.json.JSONObject;
-
-import br.com.aspotato.pagarme.models.Plan;
-import br.com.aspotato.pagarme.utils.PagarMeProvider;
-import br.com.aspotato.pagarme.utils.PagarMeUtil;
-
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.HttpRequestWithBody;
+import org.json.JSONObject;
+import br.com.aspotato.pagarme.models.Plan;
+import br.com.aspotato.pagarme.utils.PagarMeProvider;
+import br.com.aspotato.pagarme.utils.PagarMeUtil;
+
+import java.util.ArrayList;
 
 public class PlanService extends BasicService {
 
